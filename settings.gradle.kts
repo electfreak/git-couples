@@ -11,4 +11,5 @@ plugins {
 
 rootProject.name = "git-couples"
 
-includeBuild("git-couples-calculate")
+include("git-couples-calculate")
+include("git-couples-plugin")

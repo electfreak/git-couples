@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 
 typealias CommitList = List<GHApiAdapter.CommitInList>
 
-class GHApiAdapter : Adapter() {
+class GHApiAdapter : RepoAdapter() {
     val repo = "torvalds/linux"
 
     val client
@@ -30,7 +30,7 @@ class GHApiAdapter : Adapter() {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        BearerTokens("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", "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")
+                        BearerTokens("token", "token")
                     }
                 }
             }

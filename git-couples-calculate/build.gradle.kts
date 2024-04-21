@@ -43,5 +43,5 @@ kotlin {
 }
 
 application {
-    mainClass = "MainKt"
+    mainClass.value( "MainKt")
 }

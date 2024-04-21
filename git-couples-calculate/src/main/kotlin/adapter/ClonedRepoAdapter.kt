@@ -1,13 +1,13 @@
 package adapter
 
-import pairsChartCalculator.Developer
-import pairsChartCalculator.FileChangeCommitCountMap
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.treewalk.TreeWalk
+import pairsChartCalculator.Developer
+import pairsChartCalculator.FileChangeCommitCountMap
 import java.io.File
 
-class ClonedRepoAdapter(pathToRepo: String) : Adapter() {
+class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
     private val repositoryBuilder = FileRepositoryBuilder()
     private val repository = repositoryBuilder.setGitDir(File("$pathToRepo/.git"))
         .readEnvironment()
