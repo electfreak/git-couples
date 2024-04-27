@@ -4,17 +4,17 @@ import pairsChartCalculator.Developer
 import pairsChartCalculator.FileChangeCommitCountMap
 
 abstract class RepoAdapter {
-    abstract suspend fun iterateThroughCommits(branchName: String): Map<Developer, FileChangeCommitCountMap>
+    abstract suspend fun getCommitCountMap(branchName: String): Map<Developer, FileChangeCommitCountMap>
 
-    protected fun MutableMap<Developer, FileChangeCommitCountMap>.incContributionToFiles(
+    protected fun MutableMap<Developer, FileChangeCommitCountMap>.incContributionToFiles( //typealias
         dev: Developer,
         filePaths: List<String>
     ) {
         val fileChangeCommitCountMap =
-            this.getOrPut(dev) { filePaths.associateWith { 0 }.toMutableMap() }
+            getOrPut(dev) { filePaths.associateWith { 0 }.toMutableMap() }
 
         filePaths.forEach {
-            fileChangeCommitCountMap[it] = fileChangeCommitCountMap.getOrDefault(it, 0) + 1
+            fileChangeCommitCountMap[it] = fileChangeCommitCountMap.getOrDefault(it, 0).inc()
         }
     }
 
@@ -23,12 +23,6 @@ abstract class RepoAdapter {
         filePath: String
     ) = incContributionToFiles(dev, listOf(filePath))
 
-    /*{
-        val fileChangeCommitCountMap =
-            this.getOrPut(dev) { mutableMapOf(filePath to 0) }
-
-        fileChangeCommitCountMap[filePath] = fileChangeCommitCountMap.getOrDefault(filePath, 0) + 1
-    }*/
 
     abstract suspend fun getBranches(): List<String>
 }

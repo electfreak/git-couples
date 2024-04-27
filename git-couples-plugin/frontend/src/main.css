@@ -1,0 +1,92 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --font-gotham: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Droid Sans", "Helvetica Neue", Arial,
+        sans-serif;
+
+    --athens-gray: #eaeaec;
+    --tomato: #ec5424;
+    --dark: #161616;
+    --dove-gray: #696969;
+    --cod-gray: #3c3f43;
+    --silver-gray: #afb1b3;
+    --azure: #27a4f7;
+    --orange: #f76707;
+}
+
+body {
+    font-family: var(--font-gotham);
+}
+
+h1,
+h2 {
+    font: inherit;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+#chart {
+    display: flex;
+    flex-direction: column;
+}
+
+#chart h2 {
+    font-size: 15px;
+}
+
+.select {
+    position: relative;
+    display: inline-block;
+}
+
+select {
+    border: solid 1px rgba(39, 40, 44, 0.2);
+    padding: 16px;
+    font-size: 15px;
+    appearance: none;
+    margin-bottom: 20px;
+}
+
+.select::after {
+    content: "";
+    position: absolute;
+    right: 9px;
+    top: 21px;
+    width: 0.8em;
+    height: 0.5em;
+    background-color: var(--dark);
+    clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--orange);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    margin: auto;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.and {
+    background-color: rgba(39, 40, 44, 0.05);
+    color: rgba(39, 40, 44, 0.7);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}

@@ -13,3 +13,5 @@ rootProject.name = "git-couples"
 
 include("git-couples-calculate")
 include("git-couples-plugin")
+include("git-couples-plugin:plugin")
+include("git-couples-plugin:frontend")

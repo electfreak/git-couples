@@ -10,6 +10,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/git-couples-calculate" />
             <option value="$PROJECT_DIR$/git-couples-plugin" />
+            <option value="$PROJECT_DIR$/git-couples-plugin/frontend" />
+            <option value="$PROJECT_DIR$/git-couples-plugin/plugin" />
           </set>
         </option>
       </GradleProjectSettings>

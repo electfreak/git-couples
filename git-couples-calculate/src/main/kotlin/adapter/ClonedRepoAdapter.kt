@@ -15,9 +15,8 @@ class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
         .build()
 
     private val git = Git(repository)
-
-    override suspend fun iterateThroughCommits(branchName: String): Map<Developer, FileChangeCommitCountMap> {
-        val res = mutableMapOf<Developer, FileChangeCommitCountMap>()
+    override suspend fun getCommitCountMap(branchName: String): Map<Developer, FileChangeCommitCountMap> {
+        val developerToFileChanges = mutableMapOf<Developer, FileChangeCommitCountMap>()
         val commits = git.log().add(repository.resolve(branchName)).call()
         for (commit in commits) {
             val dev = Developer(commit.authorIdent.name, null)
@@ -26,12 +25,12 @@ class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
                 treeWalk.addTree(commit.tree)
                 treeWalk.isRecursive = true
                 while (treeWalk.next()) {
-                    res.incContributionToFile(dev, treeWalk.pathString)
+                    developerToFileChanges.incContributionToFile(dev, treeWalk.pathString)
                 }
             }
         }
 
-        return res
+        return developerToFileChanges
     }
 
     override suspend fun getBranches() = git.branchList().call().map { it.name }

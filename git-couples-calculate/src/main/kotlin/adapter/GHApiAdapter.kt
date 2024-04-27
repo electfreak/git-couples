@@ -15,11 +15,11 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 typealias CommitList = List<GHApiAdapter.CommitInList>
+const val repo = "torvalds/linux"
 
 class GHApiAdapter : RepoAdapter() {
-    val repo = "torvalds/linux"
 
-    val client
+    private val client
         get() = HttpClient(CIO) {
             install(ContentNegotiation) {
                 json(Json {
@@ -64,15 +64,15 @@ class GHApiAdapter : RepoAdapter() {
         }
     }
 
-    suspend fun getCommits(): CommitList {
+    private suspend fun getCommits(): CommitList {
         val response: HttpResponse = client.get("https://api.github.com/repos/$repo/commits")
         return response.body<CommitList>().also {
             client.close()
         }
     }
 
-    suspend fun getCommit(sha: String): Commit {
-        val response: HttpResponse = client.get("https://api.github.com/repos/$repo/commits/$sha")
+    private suspend fun getCommit(sha: String): Commit {
+        val response: HttpResponse = client.get("https://api.github.com/repos/$repo/commits/$sha") // TODO resolve duplicates
         try {
             return response.body<Commit>().also {
                 client.close()
@@ -83,16 +83,16 @@ class GHApiAdapter : RepoAdapter() {
         }
     }
 
-    override suspend fun iterateThroughCommits(branchName: String): Map<Developer, FileChangeCommitCountMap> {
-        val res = mutableMapOf<Developer, FileChangeCommitCountMap>()
+    override suspend fun getCommitCountMap(branchName: String): Map<Developer, FileChangeCommitCountMap> {
+        val res = mutableMapOf<Developer, FileChangeCommitCountMap>() //TODO
 
         val commits = getCommits()
 
-        for (sha in commits) {
-            val commit = getCommit(sha.sha)
+        for (commit in commits) {
+            val realCommit = getCommit(commit.sha)
             res.incContributionToFiles(
-                Developer(commit.commit.author.name, commit.author?.login),
-                commit.files.map { it.filename })
+                Developer(realCommit.commit.author.name, realCommit.author?.login),
+                realCommit.files.map { it.filename })
 
         }
 

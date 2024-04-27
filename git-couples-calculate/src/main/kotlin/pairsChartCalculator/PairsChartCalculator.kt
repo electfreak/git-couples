@@ -1,15 +1,21 @@
 package pairsChartCalculator
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.math.min
 
-data class Developer(val name: String, val login: String?)
+@Serializable
+data class Developer(val name: String, val login: String? = null)
+
+@Serializable
 data class ContributionToFile(val filePath: String, val fileChangeCommitCount: Int)
 
+@Serializable
 class CommonPairContribution(
     val devA: Developer,
-    contribByA: Map<String, Int>,
+    @Transient val contribByA: Map<String, Int> = mapOf(),
     val devB: Developer,
-    contribByB: Map<String, Int>,
+    @Transient val contribByB: Map<String, Int> = mapOf(),
 ) : Comparable<CommonPairContribution> {
 
     val intersectedContribution: List<ContributionToFile>
@@ -33,7 +39,7 @@ class CommonPairContribution(
 typealias FileChangeCommitCountMap = MutableMap<String, Int>
 
 fun calculateChart(contributionByDeveloper: Map<Developer, FileChangeCommitCountMap>): List<CommonPairContribution> {
-    val pairs = contributionByDeveloper.keys.flatMapIndexed { index, i ->
+    val pairs = contributionByDeveloper.keys.flatMapIndexed { index, i -> // TODO i,j -> to normal variable names
         contributionByDeveloper.keys.drop(index + 1).map { j -> i to j }
     }
 

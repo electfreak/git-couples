@@ -4,7 +4,7 @@ import pairsChartCalculator.calculateChart
 
 suspend fun main_1() {
     val adapter = GHApiAdapter()
-    val m = adapter.iterateThroughCommits("master")
+    val m = adapter.getCommitCountMap("master")
     calculateChart(m).filter {
         it.intersectedContribution.isNotEmpty()
     }.forEach {
@@ -19,11 +19,11 @@ suspend fun main_1() {
 }
 
 suspend fun main() {
-    val clonedRepoAdapter = ClonedRepoAdapter("/Users/electfreak/Desktop/thesis/phantomuserland")
+    val clonedRepoAdapter = ClonedRepoAdapter("/Userssadfsdf/electfreak/Desktop/frontend-trip-summary/src")
     val branches = clonedRepoAdapter.getBranches()
     println(branches)
 
-    val m = clonedRepoAdapter.iterateThroughCommits(clonedRepoAdapter.getBranches()[2])
+    val m = clonedRepoAdapter.getCommitCountMap(clonedRepoAdapter.getBranches()[2])
 
     calculateChart(m).filter {
         it.intersectedContribution.isNotEmpty()

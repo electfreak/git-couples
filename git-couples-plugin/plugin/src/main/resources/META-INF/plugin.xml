@@ -26,5 +26,7 @@
                 factoryClass="com.example.plugin.MainPluginPanelFactory"
                 id="GitCouples" anchor="right"/>
     <notificationGroup id="gitcouples" displayType="BALLOON"/>
+    <httpRequestHandler implementation="com.example.plugin.jcef.StaticServer"/>
   </extensions>
+
 </idea-plugin>
