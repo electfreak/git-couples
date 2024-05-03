@@ -4,7 +4,6 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.treewalk.TreeWalk
 import pairsChartCalculator.Developer
-import pairsChartCalculator.FileChangeCommitCountMap
 import java.io.File
 
 class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
@@ -15,22 +14,24 @@ class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
         .build()
 
     private val git = Git(repository)
-    override suspend fun getCommitCountMap(branchName: String): Map<Developer, FileChangeCommitCountMap> {
-        val developerToFileChanges = mutableMapOf<Developer, FileChangeCommitCountMap>()
+    override suspend fun getContributionByDeveloper(branchName: String): Map<Developer, FileChangeCommitCountMap> {
+        val developerToFileChanges = mutableMapOf<String, FileChangeCommitCountMap>()
         val commits = git.log().add(repository.resolve(branchName)).call()
         for (commit in commits) {
-            val dev = Developer(commit.authorIdent.name, null)
-
             TreeWalk(repository).use { treeWalk ->
                 treeWalk.addTree(commit.tree)
                 treeWalk.isRecursive = true
                 while (treeWalk.next()) {
-                    developerToFileChanges.incContributionToFile(dev, treeWalk.pathString)
+                    developerToFileChanges.incContributionToFile(
+                        commit.authorIdent.emailAddress,
+                        commit.authorIdent.name,
+                        treeWalk.pathString
+                    )
                 }
             }
         }
 
-        return developerToFileChanges
+        return developerToFileChanges.toContributionByDeveloper()
     }
 
     override suspend fun getBranches() = git.branchList().call().map { it.name }

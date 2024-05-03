@@ -13,7 +13,7 @@ import org.jetbrains.io.response
 import org.jetbrains.io.send
 
 internal class StaticServer : HttpRequestHandler() {
-    val serverUrl = "http://localhost:${BuiltInServerManager.getInstance().port}/$GIT_COUPLES_RESOURCES"
+    val serverUrl = "http://localhost:${BuiltInServerManager.getInstance().port}/$GIT_COUPLES_URL"
     private lateinit var calculatorWrapper: PluginCalculatorWrapper
     fun setCalculatorWrapper(pathToRepo: String) {
         calculatorWrapper = PluginCalculatorWrapper(pathToRepo)
@@ -25,37 +25,41 @@ internal class StaticServer : HttpRequestHandler() {
         logger.warn("Starting static server with url: $serverUrl")
     }
 
+    private fun QueryStringDecoder.getAppropriateRequestString() = this
+        .path()
+        .split(GIT_COUPLES_URL)
+        .getOrNull(1)
+
     override fun process(
         urlDecoder: QueryStringDecoder,
         request: FullHttpRequest,
         context: ChannelHandlerContext
     ): Boolean {
-        val appropriateRequestString = urlDecoder
-            .path()
-            .split(GIT_COUPLES_RESOURCES)
-            .getOrNull(1) ?: return false
+        val appropriateRequestString = urlDecoder.getAppropriateRequestString() ?: return false
 
         if (appropriateRequestString.startsWith("/$BASE_DIRECTORY")) {
             return sendResource(appropriateRequestString, request, context)
-        } else if (appropriateRequestString.startsWith("/$API")) {
-            return processApiRequest(appropriateRequestString, request, context)
+        } else if (appropriateRequestString.startsWith("/$GIT_COUPLES_API")) {
+            return processApiRequest(urlDecoder, request, context)
         }
 
         return false
     }
 
     private fun processApiRequest(
-        query: String,
+        urlDecoder: QueryStringDecoder,
         request: FullHttpRequest,
         context: ChannelHandlerContext
     ): Boolean {
+        val query = urlDecoder.getAppropriateRequestString() ?: return false
+
         if (!::calculatorWrapper.isInitialized) {
             return false
         }
 
         var json: String = ""
 
-        val apiQuery = query.split(API)[1].drop(1)
+        val apiQuery = query.split(GIT_COUPLES_API)[1].drop(1)
 
         if (apiQuery.startsWith("getBranches")) {
             json = calculatorWrapper.getBranches()
@@ -63,8 +67,13 @@ internal class StaticServer : HttpRequestHandler() {
 
         if (apiQuery.startsWith("getChart")) {
             val branch = apiQuery.split("getChart/")[1]
-            println("branch: $branch")
             json = calculatorWrapper.getChart(branch)
+        }
+
+        if (apiQuery.startsWith("getIntersectedContribution")) {
+            val id = urlDecoder.parameters()["id"]?.first() ?: return false
+            val branch = urlDecoder.parameters()["branch"]?.first() ?: return false
+            json = calculatorWrapper.getIntersectedContribution(branch, id.toInt())
         }
 
         val response = response("application/json", Unpooled.wrappedBuffer(json.toByteArray()))
@@ -78,7 +87,8 @@ internal class StaticServer : HttpRequestHandler() {
         context: ChannelHandlerContext
     ): Boolean {
         val contentType = FileResponses.getContentType(resourceRelativePath)
-        val url = this::class.java.getResource(resourceRelativePath) ?: return false //use getResource from kotlin class this -> StaticServer
+        val url = this::class.java.getResource(resourceRelativePath)
+            ?: return false //use getResource from kotlin class this -> StaticServer
         val resultBuffer = Unpooled.wrappedBuffer(url.readBytes())
         val response = response(contentType, resultBuffer)
         response.send(context.channel(), request)
@@ -87,8 +97,8 @@ internal class StaticServer : HttpRequestHandler() {
 
     companion object {
         private val logger = logger<StaticServer>()
-        const val GIT_COUPLES_RESOURCES = "gitCouplesResources"
-        const val API = "api"
+        const val GIT_COUPLES_URL = "gitCouplesResources"
+        const val GIT_COUPLES_API = "api"
         private const val BASE_DIRECTORY = "frontend" // badly hardcoded
 
         val instance by lazy { checkNotNull(EP_NAME.findExtension(StaticServer::class.java)) }

@@ -1,7 +1,8 @@
 type branches = string[];
 
 interface Developer {
-    name: string;
+    email: string;
+    names: string[];
     login: string | null;
 }
 

@@ -11,14 +11,13 @@ function drawChart(data: CommonPairContribution[]) {
         const pairEl = document.createElement("div");
         pairEl.innerHTML = `
             <h2><span class="and">${id + 1}</span> ${
-            pair.devA.name
-        } <span class="and">and</span> ${pair.devB.name}</h2>`;
-        //     <ul>
-        //         ${pair.intersectedContribution.map((contribution) => {
-        //             return `<li>${contribution.filePath} - ${contribution.fileChangeCommitCountMap}</li>`;
-        //         })}
-        //     </ul>
-        // `;
+            pair.devA.email
+        } <span class="and">and</span> ${pair.devB.email}</h2>`;
+
+        // pairEl.onclick = () => {
+        //     pairEl.after(makeFilesBlockForCouple(pair.intersectedContribution));
+        // };
+
         chartEl.appendChild(pairEl);
     });
 }

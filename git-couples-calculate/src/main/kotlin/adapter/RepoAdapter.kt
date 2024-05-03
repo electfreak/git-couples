@@ -1,28 +1,36 @@
 package adapter
 
 import pairsChartCalculator.Developer
-import pairsChartCalculator.FileChangeCommitCountMap
+
+typealias FileChangeCommitCountMap = MutableMap<String, Int>
 
 abstract class RepoAdapter {
-    abstract suspend fun getCommitCountMap(branchName: String): Map<Developer, FileChangeCommitCountMap>
+    abstract suspend fun getContributionByDeveloper(branchName: String): Map<Developer, FileChangeCommitCountMap>
+    abstract suspend fun getBranches(): List<String>
+    private val emailToNames: HashMap<String, MutableSet<String>> = hashMapOf()
 
-    protected fun MutableMap<Developer, FileChangeCommitCountMap>.incContributionToFiles( //typealias
-        dev: Developer,
+    protected fun MutableMap<String, FileChangeCommitCountMap>.incContributionToFiles(
+        email: String,
+        name: String,
         filePaths: List<String>
     ) {
+        emailToNames.getOrPut(email) { hashSetOf() }.add(name)
+
         val fileChangeCommitCountMap =
-            getOrPut(dev) { filePaths.associateWith { 0 }.toMutableMap() }
+            getOrPut(email) { filePaths.associateWith { 0 }.toMutableMap() }
 
         filePaths.forEach {
             fileChangeCommitCountMap[it] = fileChangeCommitCountMap.getOrDefault(it, 0).inc()
         }
     }
 
-    protected fun MutableMap<Developer, FileChangeCommitCountMap>.incContributionToFile(
-        dev: Developer,
+    protected fun MutableMap<String, FileChangeCommitCountMap>.toContributionByDeveloper() =
+        this.mapKeys { Developer(it.key, emailToNames.getOrDefault(it.key, setOf())) }
+
+    protected fun MutableMap<String, FileChangeCommitCountMap>.incContributionToFile(
+        email: String,
+        name: String,
         filePath: String
-    ) = incContributionToFiles(dev, listOf(filePath))
+    ) = incContributionToFiles(email, name, listOf(filePath))
 
-
-    abstract suspend fun getBranches(): List<String>
 }

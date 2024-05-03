@@ -5,7 +5,7 @@ import kotlinx.serialization.Transient
 import kotlin.math.min
 
 @Serializable
-data class Developer(val name: String, val login: String? = null)
+data class Developer(val email: String, val names: Set<String>, val login: String? = null)
 
 @Serializable
 data class ContributionToFile(val filePath: String, val fileChangeCommitCount: Int)
@@ -18,18 +18,26 @@ class CommonPairContribution(
     @Transient val contribByB: Map<String, Int> = mapOf(),
 ) : Comparable<CommonPairContribution> {
 
-    val intersectedContribution: List<ContributionToFile>
+    //    val intersectedContribution: List<ContributionToFile>
+    private val overallScore: Int
+
+    @Transient
+    private val overlappedFiles = contribByA.keys.intersect(contribByB.keys).associateWith { s ->
+        min(contribByA.getValue(s), contribByB.getValue(s))
+    }
 
     init {
         val overlappedFiles = contribByA.keys.intersect(contribByB.keys).associateWith { s ->
             min(contribByA.getValue(s), contribByB.getValue(s))
         }
 
-        intersectedContribution = overlappedFiles.toList().sortedByDescending { (_, value) -> value }
-            .map { (filePath, fileChangeCommitCount) -> ContributionToFile(filePath, fileChangeCommitCount) }
+        overallScore = overlappedFiles.values.sum()
     }
 
-    private val overallScore = intersectedContribution.sumOf { it.fileChangeCommitCount }
+    fun getIntersectedContribution(): List<ContributionToFile> {
+        return overlappedFiles.toList().sortedByDescending { (_, value) -> value }
+            .map { (filePath, fileChangeCommitCount) -> ContributionToFile(filePath, fileChangeCommitCount) }
+    }
 
     override operator fun compareTo(other: CommonPairContribution): Int {
         return this.overallScore - other.overallScore
