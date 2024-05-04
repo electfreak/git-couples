@@ -27,7 +27,7 @@ internal class StaticServer : HttpRequestHandler() {
 
     private fun QueryStringDecoder.getAppropriateRequestString() = this
         .path()
-        .split(GIT_COUPLES_URL)
+        .split("$GIT_COUPLES_URL/")
         .getOrNull(1)
 
     override fun process(
@@ -37,9 +37,9 @@ internal class StaticServer : HttpRequestHandler() {
     ): Boolean {
         val appropriateRequestString = urlDecoder.getAppropriateRequestString() ?: return false
 
-        if (appropriateRequestString.startsWith("/$BASE_DIRECTORY")) {
-            return sendResource(appropriateRequestString, request, context)
-        } else if (appropriateRequestString.startsWith("/$GIT_COUPLES_API")) {
+        if (appropriateRequestString.startsWith(BASE_DIRECTORY)) {
+            return sendResource("/$appropriateRequestString", request, context)
+        } else if (appropriateRequestString.startsWith(GIT_COUPLES_API)) {
             return processApiRequest(urlDecoder, request, context)
         }
 
@@ -57,21 +57,24 @@ internal class StaticServer : HttpRequestHandler() {
             return false
         }
 
-        val apiQuery = query.split(GIT_COUPLES_API)[1].drop(1)
+        val apiQuery = query.drop(GIT_COUPLES_API.length + 1)
 
         val json = when {
             apiQuery.startsWith("getBranches") -> {
                 calculatorWrapper.getBranches()
             }
+
             apiQuery.startsWith("getChart") -> {
-                val branch = apiQuery.split("getChart/")[1]
+                val branch = apiQuery.drop("getChart".length + 1)
                 calculatorWrapper.getChart(branch)
             }
+
             apiQuery.startsWith("getIntersectedContribution") -> {
                 val id = urlDecoder.parameters()["id"]?.first() ?: return false
                 val branch = urlDecoder.parameters()["branch"]?.first() ?: return false
                 calculatorWrapper.getIntersectedContribution(branch, id.toInt())
             }
+
             else -> error("Invalid request to API")
         }
 
