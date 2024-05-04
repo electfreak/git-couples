@@ -46,7 +46,6 @@ class CommonPairContribution(
 typealias FileChangeCommitCountMap = MutableMap<String, Int>
 
 fun calculateChart(contributionByDeveloper: Map<Developer, FileChangeCommitCountMap>): List<CommonPairContribution> {
-    println(contributionByDeveloper.keys)
     val pairs = contributionByDeveloper.keys.flatMapIndexed { index, i -> // TODO i,j -> to normal variable names
         contributionByDeveloper.keys.drop(index + 1).map { j -> i to j }
     }
