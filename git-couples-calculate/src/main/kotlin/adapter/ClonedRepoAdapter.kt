@@ -37,10 +37,7 @@ class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
     fun listChangedFiles(commit: RevCommit): MutableList<String> {
         val files = mutableListOf<String>()
         RevWalk(repository).use { revWalk ->
-            val parentCommit =
-                if (commit.parentCount > 0) revWalk.parseCommit(commit.getParent(0).id) else null
-
-            if (parentCommit == null) {
+            if (commit.parentCount == 0) {
                 TreeWalk(repository).use { treeWalk ->
                     treeWalk.addTree(commit.tree)
                     treeWalk.isRecursive = true
@@ -51,6 +48,8 @@ class ClonedRepoAdapter(pathToRepo: String) : RepoAdapter() {
                     return files
                 }
             }
+
+            val parentCommit = revWalk.parseCommit(commit.getParent(0).id)
 
             TreeWalk(repository).use { treeWalk ->
                 treeWalk.addTree(parentCommit.tree)

@@ -1,3 +1,8 @@
+/**
+ * DHIS DOCUMENT IS UNFINISHED DEMONSTRATION OF
+ * HOW RepoAdapter COULD BE USED TO EXTEND FUNCTIONALITY
+ */
+
 //package adapter
 //
 //import pairsChartCalculator.Developer
