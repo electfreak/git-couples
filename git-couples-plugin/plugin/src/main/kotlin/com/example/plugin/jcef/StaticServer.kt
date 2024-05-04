@@ -57,23 +57,22 @@ internal class StaticServer : HttpRequestHandler() {
             return false
         }
 
-        var json: String = ""
-
         val apiQuery = query.split(GIT_COUPLES_API)[1].drop(1)
 
-        if (apiQuery.startsWith("getBranches")) {
-            json = calculatorWrapper.getBranches()
-        }
-
-        if (apiQuery.startsWith("getChart")) {
-            val branch = apiQuery.split("getChart/")[1]
-            json = calculatorWrapper.getChart(branch)
-        }
-
-        if (apiQuery.startsWith("getIntersectedContribution")) {
-            val id = urlDecoder.parameters()["id"]?.first() ?: return false
-            val branch = urlDecoder.parameters()["branch"]?.first() ?: return false
-            json = calculatorWrapper.getIntersectedContribution(branch, id.toInt())
+        val json = when {
+            apiQuery.startsWith("getBranches") -> {
+                calculatorWrapper.getBranches()
+            }
+            apiQuery.startsWith("getChart") -> {
+                val branch = apiQuery.split("getChart/")[1]
+                calculatorWrapper.getChart(branch)
+            }
+            apiQuery.startsWith("getIntersectedContribution") -> {
+                val id = urlDecoder.parameters()["id"]?.first() ?: return false
+                val branch = urlDecoder.parameters()["branch"]?.first() ?: return false
+                calculatorWrapper.getIntersectedContribution(branch, id.toInt())
+            }
+            else -> error("Invalid request to API")
         }
 
         val response = response("application/json", Unpooled.wrappedBuffer(json.toByteArray()))

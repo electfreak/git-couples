@@ -82,11 +82,3 @@ select {
         transform: rotate(360deg);
     }
 }
-
-.and {
-    background-color: rgba(39, 40, 44, 0.05);
-    color: rgba(39, 40, 44, 0.7);
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-}

@@ -7,12 +7,12 @@ interface Developer {
 }
 
 interface ContributionToFile {
-  filePath: string;
-  fileChangeCommitCountMap: number;
+    filePath: string;
+    fileChangeCommitCount: number;
 }
 
 interface CommonPairContribution {
-  devA: Developer;
-  devB: Developer;
-  intersectedContribution: ContributionToFile[];
+    devA: Developer;
+    devB: Developer;
+    overallScore: number;
 }
