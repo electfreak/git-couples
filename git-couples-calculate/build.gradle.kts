@@ -19,7 +19,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktor_version")
 
 //    implementation("org.slf4j:slf4j-simple:1.6.1")
-    implementation ("ch.qos.logback:logback-classic:1.4.14") // https://youtrack.jetbrains.com/issue/KTOR-1632/Failed-to-load-class-org.slf4j.impl.StaticLoggerBinder-when-SLF4J-binding-not-found-in-class-path
+    implementation("ch.qos.logback:logback-classic:1.4.14") // https://youtrack.jetbrains.com/issue/KTOR-1632/Failed-to-load-class-org.slf4j.impl.StaticLoggerBinder-when-SLF4J-binding-not-found-in-class-path
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.9.0.202403050737-r") // jgit
 
@@ -43,5 +43,5 @@ kotlin {
 }
 
 application {
-    mainClass.value( "MainKt")
+    mainClass.value("MainKt")
 }

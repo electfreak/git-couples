@@ -6,8 +6,6 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.jcef.JBCefBrowser
-import org.cef.browser.CefBrowser
-import org.jetbrains.ide.BuiltInServerManager
 
 class MainPluginPanelFactory : ToolWindowFactory {
     private val windowBrowser: JBCefBrowser = JBCefBrowser()
